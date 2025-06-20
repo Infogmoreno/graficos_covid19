@@ -1,0 +1,343 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://supereggbert.github.io/aframe-htmlembed-component/dist/build.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@4.2.1/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-proxy-event-component/dist/aframe-proxy-event-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+    <script>
+      AFRAME.registerComponent("cloak", {
+        init: function () {
+          var geometry = new THREE.BoxGeometry(1.1, 1.1, 1.1);
+          var material = new THREE.MeshBasicMaterial({ colorWrite: false });
+          var cube = new THREE.Mesh(geometry, material);
+          this.el.object3D.add(cube);
+        },
+      });
+    </script>
+    <script>
+    AFRAME.registerComponent('play-on-click', {
+  init: function () {
+    this.onClick = this.onClick.bind(this);
+  },
+  play: function () {
+    window.addEventListener('click', this.onClick);
+  },
+  pause: function () {
+    window.removeEventListener('click', this.onClick);
+  },
+  onClick: function (evt) {
+    var videoEl = this.el.getAttribute('material').src;
+    if (!videoEl) { return; }
+    this.el.object3D.visible = true;
+    videoEl.play();
+  }
+});
+    
+    
+    </script>
+
+    <style>
+      .grid-container {
+        display: grid;
+        height: 140px;
+        width: 100vw;
+        align-content: center;
+        justify-content: center;
+        grid-template-columns: auto auto auto auto auto;
+        gap: 4px 5px;
+
+        background-color: rgba(255, 255, 255, 0);
+        padding: 5px;
+      }
+
+      .grid-container > div {
+        background-color: rgba(145, 155, 185, 0.8);
+        text-align: center;
+
+        border-radius: 6px;
+      }
+
+      .boton {
+        font-size: 9px;
+        font-weight: normal;
+        padding: 10px;
+        font-family: Montserrat;
+        transform: scale(0.9, 0.9);
+        color: white;
+      }
+      .boton:hover {
+        opacity: 0.5;
+        transform: scale(1.05, 1.05);
+        color: black;
+      }
+      p {
+        color: white;
+        font-family: Montserrat;
+        font-size: 11px;
+        visibility: hidden;
+      }
+      h1 {
+        color: white;
+        font-family: Roboto;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene
+      ar-hit-test="target:"
+      webxr
+      reflection="directionalLight:#real-light"
+      renderer="antialias: true;
+                   colorManagement: true;
+                   sortObjects: true;
+                   logarithmicDepthBuffer: true;
+                   physicallyCorrectLights: false;
+                   maxCanvasWidth: 1680;
+                   maxCanvasHeight: 1050;"
+    >
+      <a-assets>
+        <audio
+          id="bip"
+          src="assets/little-blip.wav"
+          crossorigin="anonymous"
+          preload
+        ></audio>
+        <img
+          id="grafico"
+          src="assets/Grafico_Evolucion_COVID-19_Espania.png"
+          crossorigin="anonymous"
+        />
+        <img
+          id="grafico_mundo"
+          src="assets/Grafico_Evolucion_COVID-19_Mundo.png"
+          crossorigin="anonymous"
+        />
+        <img
+          id="grafico_paises"
+          src="assets/Grafico_Evolucion_COVID-19_Paises.png"
+          crossorigin="anonymous"
+        />
+        <video
+          id="videotransp"
+          src="assets/Panel_texto_evento.webm"
+          crossorigin="anonymous"         
+          loop="true"
+        ></video>
+         <video
+          id="grafcovidbarras"
+          src="assets/Grafica_mov_COVID-19_Barras.webm"
+          crossorigin="anonymous"         
+          loop="true"
+        ></video>
+         <video
+          id="grafcovidlineas"
+          src="assets/Grafica_mov_COVID-19_Lineas.webm"
+          crossorigin="anonymous"         
+          loop="true"
+        ></video>
+      </a-assets>
+      <a-entity id="overlay" htmlembed="ppu: 512" position="0 0.7 -0.9">
+        <div id="botones_UI">
+          <div class="grid-container">
+            <div id="btn_1" class="boton">COVID<br />España</div>
+            <div id="btn_2" class="boton">Casos<br />España 2</div>
+            <div id="btn_3" class="boton">Casos<br />Paises</div>
+            <div id="btn_4" class="boton">Paneles<br />Lateral</div>
+            <div id="btn_5" class="boton">Texto<br />Info</div>
+          </div>
+        </div>
+      </a-entity>
+
+      <a-entity id="paneles">
+        <a-image
+          id="graficbarmund"
+          src="#grafico_mundo"
+          position="0 1.10 -1"
+          width="0.80"
+          height="0.5"
+          visible="false"
+        >
+        </a-image>
+
+        <a-image
+          id="graficbarpaises"
+          src="#grafico_paises"
+          position="0 1.10 -1"
+          width="0.80"
+          height="0.5"
+          visible="false"
+        >
+        </a-image>
+
+        <a-image
+          id="graficbar"
+          src="#grafico"
+          position="0 1.10 -1"
+          width="0.80"
+          height="0.5"
+          visible="false"
+        >
+        </a-image>
+
+        <a-image
+          id="graficizq"
+          src="#grafico_mundo"
+          position="-0.8 1.10 -0.8"
+          rotation="0 30 0"
+          width="0.80"
+          height="0.5"
+          visible="false"
+        >
+        </a-image>
+
+        <a-image
+          id="graficdrcha"
+          src="#grafico_paises"
+          position="0.8 1.10 -0.8"
+          rotation="0 -30 0"
+          width="0.80"
+          height="0.5"
+          visible="false"
+        >
+        </a-image>
+        <a-video
+          id="videopanel"
+          src="#grafcovidlineas"
+          width="0.80"
+          height="0.5"
+          position="0.8 1.10 -0.8"
+          rotation="0 -30 0"
+          opacity="0"
+          play-on-click       
+        ></a-video>
+        <a-video
+          id="videocovidbarras"
+          src="#grafcovidbarras"
+          width="0.64"
+          height="0.34"
+          position="0 1.55 -0.8"
+          rotation="0 0 0"
+          opacity="0"
+          play-on-click       
+        ></a-video>
+         <a-video
+          id="videocovidlineas"
+          src="#grafcovidlineas"
+          width="0.80"
+          height="0.5"
+          position="0.8 1.10 -0.83"
+          rotation="0 -30 0"
+          opacity="0"
+          play-on-click       
+        ></a-video>
+      </a-entity>
+
+      <a-entity camera look-controls position="0 1.1 0">
+        <a-entity
+          cursor="fuse: true; fuseTimeout: 500"
+          position="0 0 -0.7"
+          geometry="primitive: ring; radiusInner: 0.005; radiusOuter: 0.006"
+          material="color: cyan; opacity:0.3; shader: flat"
+          rayorigin="mouse"
+          raycaster="objects: *"
+        >
+        </a-entity>
+      </a-entity>
+
+      <a-light
+        id="real-light"
+        type="directional"
+        light="castShadow:true;shadowCameraAutomatic:#objects;"
+        position="1 5 1"
+        intensity="0.75"
+      ></a-light>
+    </a-scene>
+    <script>
+      const btn_1 = document.querySelector("#btn_1");
+      const btn_2 = document.querySelector("#btn_2");
+      const btn_3 = document.querySelector("#btn_3");
+      const btn_4 = document.querySelector("#btn_4");
+      const btn_5 = document.querySelector("#btn_5");
+
+      const click = document.querySelector("#bip");
+
+      const graficbarmund = document.querySelector("#graficbarmund");
+      const graficbarpaises = document.querySelector("#graficbarpaises");
+      const graficbar = document.querySelector("#graficbar");
+      const graficizq = document.querySelector("#graficizq");
+      const graficdrcha = document.querySelector("#graficdrcha");
+      const videopanel = document.querySelector("#videopanel");
+      const videocovidbarras = document.querySelector("#videocovidbarras");
+      const videocovidlineas = document.querySelector("#videocovidlineas");
+
+      btn_1.addEventListener("mouseenter", function () {
+        click.play();
+        graficbarmund.setAttribute("visible", false);
+        graficbarpaises.setAttribute("visible", false);
+        graficbar.setAttribute("visible", true);
+        graficizq.setAttribute("visible", false);
+        graficdrcha.setAttribute("visible", false);
+        videopanel.setAttribute("opacity", 0);
+        videopanel.setAttribute("currentTime", 0);
+        videocovidbarras.setAttribute("opacity", 0);
+        videocovidlineas.setAttribute("opacity", 0);
+      });
+
+      btn_2.addEventListener("mouseenter", function () {
+        click.play();
+        graficbarmund.setAttribute("visible", true);
+        graficbarpaises.setAttribute("visible", false);
+        graficbar.setAttribute("visible", false);
+        graficizq.setAttribute("visible", false);
+        graficdrcha.setAttribute("visible", false);
+        videopanel.setAttribute("opacity", 0);
+        videopanel.setAttribute("currentTime", 0);
+        videocovidbarras.setAttribute("opacity", 0);
+        videocovidlineas.setAttribute("opacity", 0);
+      });
+
+      btn_3.addEventListener("mouseenter", function () {
+        click.play();
+        graficbarmund.setAttribute("visible", false);
+        graficbarpaises.setAttribute("visible", true);
+        graficbar.setAttribute("visible", false);
+        graficizq.setAttribute("visible", false);
+        graficdrcha.setAttribute("visible", false);
+        videopanel.setAttribute("opacity", 0);
+        videopanel.setAttribute("currentTime", 0);
+        videocovidbarras.setAttribute("opacity", 0);
+        videocovidlineas.setAttribute("opacity", 0);
+      });
+
+      btn_4.addEventListener("mouseenter", function () {
+        click.play();
+        graficbarmund.setAttribute("visible", false);
+        graficbarpaises.setAttribute("visible", false);
+        graficbar.setAttribute("visible", true);
+        graficizq.setAttribute("visible", true);
+        graficdrcha.setAttribute("visible", true);
+        videopanel.setAttribute("opacity", 0);
+        videopanel.setAttribute("currentTime", 0);
+        videocovidbarras.setAttribute("opacity", 0);
+        videocovidlineas.setAttribute("opacity", 0);
+      });
+
+      btn_5.addEventListener("mouseenter", function () {
+        click.play();
+        graficbarmund.setAttribute("visible", false);
+        graficbarpaises.setAttribute("visible", false);
+        graficbar.setAttribute("visible", true);
+        graficizq.setAttribute("visible", true);
+        graficdrcha.setAttribute("visible", false);
+        videopanel.setAttribute("opacity", 1);
+        videopanel.components.material.data.src.currentTime = 0;
+        videopanel.emit('click');
+        videocovidbarras.setAttribute("opacity", 0.92);
+        videocovidlineas.setAttribute("opacity", 0);
+      });
+    </script>
+  </body>
+</html>
